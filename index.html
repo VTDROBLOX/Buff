@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tạo Đơn Hàng - Like.vn</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --red: #e8192c; --red-dark: #c0111f; --red-light: #fff0f1;
+  --teal: #0f9e8e; --teal-light: #e6f9f7;
+  --green: #22c55e; --green-light: #dcfce7;
+  --gold: #f59e0b;
+  --bg: #f5f6fa; --white: #fff;
+  --text: #1e293b; --muted: #64748b;
+  --border: #e2e8f0;
+  --sidebar-w: 240px; --nav-h: 56px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Be Vietnam Pro',sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
+a { text-decoration:none; color:inherit; }
+
+/* TOPNAV */
+.topnav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  height:var(--nav-h); background:linear-gradient(90deg,#1a1f3c,#0f9e8e);
+  display:flex; align-items:center; padding:0 16px; gap:16px;
+  box-shadow:0 2px 12px rgba(0,0,0,.2);
+}
+.nav-logo { font-size:18px; font-weight:900; color:white; display:flex; align-items:center; gap:6px; }
+.nav-logo i { color:#ff4d6d; }
+.nav-spacer { flex:1; }
+.nav-icon-btn {
+  width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.15);
+  border:none; color:white; font-size:15px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s; position:relative;
+}
+.nav-icon-btn:hover { background:rgba(255,255,255,.25); }
+.nav-badge {
+  position:absolute; top:-2px; right:-2px;
+  background:var(--red); color:white; font-size:9px; font-weight:700;
+  width:15px; height:15px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+.nav-balance {
+  background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3);
+  border-radius:999px; padding:6px 14px; color:white;
+  font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px;
+}
+.balance-val { color:#4ade80; font-weight:800; }
+
+/* BOTTOM NAV (mobile) */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:100;
+  background:white; border-top:1px solid var(--border);
+  display:flex; height:64px;
+}
+.bnav-item {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:3px; cursor:pointer;
+  color:var(--muted); font-size:10px; font-weight:600;
+  transition:color .15s; position:relative;
+}
+.bnav-item i { font-size:20px; }
+.bnav-item.active { color:var(--teal); }
+.bnav-center {
+  flex:1; display:flex; align-items:center; justify-content:center;
+}
+.bnav-fab {
+  width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(135deg,var(--red),#ff6b6b);
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px; color:white; cursor:pointer;
+  box-shadow:0 4px 16px rgba(232,25,44,.4);
+  margin-top:-20px; border:3px solid var(--bg);
+  transition:transform .2s;
+}
+.bnav-fab:hover { transform:scale(1.08); }
+.bnav-fab-label { font-size:9px; font-weight:700; color:var(--red); margin-top:-4px; }
+
+/* MAIN */
+.main {
+  margin-top:var(--nav-h);
+  padding:20px 14px 100px;
+  max-width:900px; margin-left:auto; margin-right:auto;
+}
+
+/* ORDER FORM CARD */
+.card {
+  background:white; border-radius:16px;
+  border:1.5px solid var(--border);
+  margin-bottom:16px; overflow:hidden;
+}
+.card-header {
+  padding:16px 20px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+  background:linear-gradient(90deg,#f8faff,white);
+}
+.card-header h2 { font-size:16px; font-weight:800; }
+.card-header .icon {
+  width:34px; height:34px; border-radius:10px;
+  background:var(--red-light); color:var(--red);
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+}
+.card-body { padding:20px; }
+
+/* PLATFORM TABS */
+.platform-tabs {
+  display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;
+}
+.ptab {
+  display:flex; align-items:center; gap:6px;
+  padding:7px 14px; border-radius:999px;
+  border:1.5px solid var(--border); background:var(--bg);
+  font-size:12px; font-weight:700; cursor:pointer;
+  transition:all .15s; color:var(--muted);
+}
+.ptab img { width:18px; height:18px; object-fit:contain; }
+.ptab:hover { border-color:var(--teal); color:var(--teal); }
+.ptab.active { border-color:var(--teal); background:var(--teal-light); color:var(--teal); }
+
+/* FORM ELEMENTS */
+.form-row { margin-bottom:16px; }
+.form-label {
+  display:block; font-size:12px; font-weight:700;
+  color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;
+}
+.form-select, .form-input {
+  width:100%; padding:11px 14px;
+  border:1.5px solid var(--border); border-radius:10px;
+  font-size:14px; font-family:inherit; outline:none;
+  transition:border-color .15s; background:white; color:var(--text);
+}
+.form-select:focus, .form-input:focus { border-color:var(--teal); }
+
+/* Service description box */
+.svc-desc {
+  margin-top:8px; padding:10px 14px;
+  background:var(--teal-light); border-radius:8px;
+  font-size:12px; color:var(--teal); line-height:1.6;
+  display:none;
+}
+.svc-desc.show { display:block; }
+
+/* Link input with icon */
+.input-wrap { position:relative; }
+.input-wrap i {
+  position:absolute; left:13px; top:50%; transform:translateY(-50%);
+  color:var(--muted); font-size:14px;
+}
+.input-wrap .form-input { padding-left:38px; }
+
+/* Quantity + price row */
+.qty-price-row {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+}
+.price-display {
+  padding:11px 14px; border-radius:10px;
+  background:var(--red-light); border:1.5px solid #fca5a5;
+  font-size:18px; font-weight:900; color:var(--red);
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* Shortcut quantities */
+.qty-shortcuts { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.qty-btn {
+  padding:4px 12px; border-radius:999px;
+  border:1px solid var(--border); background:var(--bg);
+  font-size:11px; font-weight:600; cursor:pointer; color:var(--muted);
+  transition:all .15s; font-family:inherit;
+}
+.qty-btn:hover { border-color:var(--teal); color:var(--teal); }
+
+/* Submit button */
+.btn-order {
+  width:100%; padding:14px; border-radius:12px;
+  background:linear-gradient(135deg,var(--red),#ff4d6d);
+  color:white; border:none; font-size:16px; font-weight:800;
+  font-family:inherit; cursor:pointer; transition:all .2s;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  box-shadow:0 6px 20px rgba(232,25,44,.3);
+}
+.btn-order:hover { transform:translateY(-1px); box-shadow:0 8px 28px rgba(232,25,44,.4); }
+.btn-order:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+/* ORDER HISTORY TABLE */
+.order-item {
+  border:1.5px solid var(--border); border-radius:12px;
+  margin-bottom:10px; overflow:hidden;
+  transition:box-shadow .2s;
+}
+.order-item:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
+.order-top {
+  padding:14px 16px; background:var(--bg);
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:8px; flex-wrap:wrap;
+}
+.order-service { font-weight:700; font-size:13.5px; flex:1; }
+.order-link { font-size:11px; color:var(--teal); margin-top:3px; word-break:break-all; }
+.order-price { font-size:16px; font-weight:900; color:var(--red); flex-shrink:0; }
+.order-bottom {
+  padding:10px 16px; display:flex; gap:16px;
+  align-items:center; flex-wrap:wrap;
+  background:white; border-top:1px solid var(--border);
+}
+.order-meta { font-size:11px; color:var(--muted); }
+.order-meta strong { color:var(--text); }
+.order-progress { flex:1; }
+.progress-bar-wrap {
+  height:6px; background:var(--border); border-radius:999px;
+  margin-top:4px; overflow:hidden;
+}
+.progress-bar-fill {
+  height:100%; background:linear-gradient(90deg,var(--teal),#4ade80);
+  border-radius:999px; transition:width .5s;
+}
+
+/* STATUS BADGES */
+.badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 10px; border-radius:999px;
+  font-size:11px; font-weight:700; flex-shrink:0;
+}
+.badge-pending    { background:#fef9c3; color:#92400e; }
+.badge-processing { background:#dbeafe; color:#1d4ed8; }
+.badge-inprogress { background:#dcfce7; color:#15803d; animation:blink 1.5s infinite; }
+.badge-completed  { background:var(--green-light); color:#15803d; }
+.badge-partial    { background:#ffedd5; color:#c2410c; }
+.badge-canceled   { background:#fee2e2; color:var(--red); }
+.badge-error      { background:#fee2e2; color:var(--red); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+/* LOADING */
+.spinner {
+  width:18px; height:18px;
+  border:3px solid rgba(255,255,255,.3); border-top-color:white;
+  border-radius:50%; animation:spin .6s linear infinite; display:inline-block;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* TOAST */
+.toast {
+  position:fixed; top:72px; left:50%; transform:translateX(-50%) translateY(-10px);
+  background:#1e293b; color:white; padding:12px 24px; border-radius:12px;
+  font-size:13px; font-weight:600; z-index:9999; opacity:0;
+  transition:all .3s; pointer-events:none; white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.toast.success { background:#15803d; }
+.toast.error   { background:var(--red); }
+
+/* FILTER ROW */
+.filter-row {
+  display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;
+}
+.filter-select {
+  padding:8px 12px; border:1.5px solid var(--border); border-radius:8px;
+  font-size:13px; font-family:inherit; outline:none; background:white;
+}
+.filter-input {
+  flex:1; min-width:180px; padding:8px 12px;
+  border:1.5px solid var(--border); border-radius:8px;
+  font-size:13px; font-family:inherit; outline:none;
+}
+.filter-input:focus { border-color:var(--teal); }
+.btn-search {
+  padding:8px 18px; background:var(--teal); color:white;
+  border:none; border-radius:8px; font-weight:700; cursor:pointer; font-family:inherit;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align:center; padding:48px 24px; color:var(--muted);
+}
+.empty-state i { font-size:48px; margin-bottom:12px; opacity:.3; }
+.empty-state p { font-size:14px; }
+
+/* SECTION TABS */
+.section-tabs { display:flex; gap:0; margin-bottom:16px; border-bottom:2px solid var(--border); }
+.stab {
+  padding:10px 20px; font-size:14px; font-weight:700; cursor:pointer;
+  color:var(--muted); border-bottom:2px solid transparent;
+  margin-bottom:-2px; transition:all .15s;
+}
+.stab.active { color:var(--teal); border-bottom-color:var(--teal); }
+</style>
+</head>
+<body>
+
+<!-- TOPNAV -->
+<nav class="topnav">
+  <div class="nav-logo"><i class="fas fa-heart"></i> Like.vn</div>
+  <div class="nav-spacer"></div>
+  <div class="nav-balance">
+    💰 Số dư: <span class="balance-val" id="nav-balance">250.000đ</span>
+  </div>
+  <button class="nav-icon-btn">
+    <i class="fas fa-bell"></i>
+    <span class="nav-badge">0</span>
+  </button>
+  <button class="nav-icon-btn">
+    <i class="fas fa-cog"></i>
+  </button>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- SECTION TABS -->
+  <div class="section-tabs">
+    <div class="stab active" onclick="showSection('order')">➕ Tạo đơn hàng</div>
+    <div class="stab" onclick="showSection('history')">📋 Lịch sử mua</div>
+  </div>
+
+  <!-- ===== ORDER FORM ===== -->
+  <div id="section-order">
+    <div class="card">
+      <div class="card-header">
+        <div class="icon"><i class="fas fa-bolt"></i></div>
+        <h2>Tạo Đơn Hàng Mới</h2>
+      </div>
+      <div class="card-body">
+
+        <!-- Platform tabs -->
+        <div class="form-row">
+          <label class="form-label">Chọn nền tảng</label>
+          <div class="platform-tabs" id="platform-tabs">
+            <div class="ptab active" data-platform="tiktok" onclick="selectPlatform(this)">
+              <img src="https://like.vn/uploads/icon/social/tiktok.png" onerror="this.style.display='none'">TikTok
+            </div>
+            <div class="ptab" data-platform="facebook" onclick="selectPlatform(this)">
+              <img src="https://like.vn/uploads/icon/social/facebook.png" onerror="this.style.display='none'">Facebook
+            </div>
+            <div class="ptab" data-platform="youtube" onclick="selectPlatform(this)">
+              <img src="https://like.vn/uploads/icon/social/youtube.png" onerror="this.style.display='none'">YouTube
+            </div>
+            <div class="ptab" data-platform="instagram" onclick="selectPlatform(this)">
+              <img src="https://like.vn/uploads/icon/social/instagram.png" onerror="this.style.display='none'">Instagram
+            </div>
+            <div class="ptab" data-platform="shopee" onclick="selectPlatform(this)">
+              <img src="https://like.vn/uploads/icon/social/shopee.png" onerror="this.style.display='none'">Shopee
+            </div>
+          </div>
+        </div>
+
+        <!-- Service dropdown -->
+        <div class="form-row">
+          <label class="form-label">Chọn dịch vụ</label>
+          <select class="form-select" id="service-select" onchange="onServiceChange()">
+            <option value="">-- Đang tải dịch vụ... --</option>
+          </select>
+          <div class="svc-desc" id="svc-desc"></div>
+        </div>
+
+        <!-- Link input -->
+        <div class="form-row">
+          <label class="form-label">Link cần tăng</label>
+          <div class="input-wrap">
+            <i class="fas fa-link"></i>
+            <input class="form-input" id="link-input" type="url"
+              placeholder="Dán link video/trang cần tăng tương tác..."
+              oninput="validateForm()">
+          </div>
+        </div>
+
+        <!-- Quantity + Price -->
+        <div class="qty-price-row">
+          <div class="form-row" style="margin-bottom:0">
+            <label class="form-label">Số lượng</label>
+            <input class="form-input" id="qty-input" type="number"
+              placeholder="Nhập số lượng..." min="10"
+              oninput="calcPrice()">
+            <div class="qty-shortcuts">
+              <button class="qty-btn" onclick="setQty(100)">100</button>
+              <button class="qty-btn" onclick="setQty(500)">500</button>
+              <button class="qty-btn" onclick="setQty(1000)">1K</button>
+              <button class="qty-btn" onclick="setQty(5000)">5K</button>
+              <button class="qty-btn" onclick="setQty(10000)">10K</button>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:0">
+            <label class="form-label">Tổng thanh toán</label>
+            <div class="price-display" id="price-display">0đ</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:6px; text-align:center">
+              Số dư sau: <strong id="balance-after">250.000đ</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Min/Max hint -->
+        <div style="font-size:12px; color:var(--muted); margin:12px 0 16px;">
+          ℹ️ Giới hạn: <span id="min-max-hint">Chọn dịch vụ để xem</span>
+        </div>
+
+        <button class="btn-order" id="btn-order" onclick="placeOrder()" disabled>
+          <i class="fas fa-rocket"></i> Đặt Hàng Ngay
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ORDER HISTORY ===== -->
+  <div id="section-history" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <div class="icon"><i class="fas fa-history"></i></div>
+        <h2>Lịch Sử Đơn Hàng</h2>
+      </div>
+      <div class="card-body">
+        <div class="filter-row">
+          <select class="filter-select" id="filter-status">
+            <option value="">Tất cả trạng thái</option>
+            <option value="pending">Đang chờ</option>
+            <option value="processing">Đang xử lý</option>
+            <option value="inprogress">Đang chạy</option>
+            <option value="completed">Hoàn thành</option>
+            <option value="partial">Chạy thiếu</option>
+            <option value="canceled">Đã hủy</option>
+          </select>
+          <input class="filter-input" id="filter-search" placeholder="Tìm kiếm đơn hàng...">
+          <button class="btn-search" onclick="loadHistory()">Tìm kiếm</button>
+        </div>
+        <div id="orders-list">
+          <div class="empty-state"><i class="fas fa-box-open"></i><p>Đang tải đơn hàng...</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bnav-item" onclick="location.href='nap-tien.html'">
+    <i class="fas fa-wallet"></i>
+    <span>Nạp tiền</span>
+  </div>
+  <div class="bnav-item" onclick="location.href='#'">
+    <i class="fas fa-coins"></i>
+    <span>Kiếm tiền</span>
+  </div>
+  <div class="bnav-center">
+    <div>
+      <div class="bnav-fab" onclick="showSection('order')">+</div>
+      <div class="bnav-fab-label">Buff</div>
+    </div>
+  </div>
+  <div class="bnav-item active" onclick="showSection('history')">
+    <i class="fas fa-history"></i>
+    <span>Lịch sử mua</span>
+  </div>
+  <div class="bnav-item">
+    <i class="fab fa-zalo" style="font-size:22px"></i>
+    <span>Hỗ trợ</span>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+let currentPlatform = 'tiktok';
+let currentService  = null;
+let userBalance     = 250000; // Demo — thay bằng fetch từ API
+
+// ===== DEMO SERVICES DATA =====
+// Thay bằng fetch('/api/order.php?action=get_services&platform=...') khi có backend
+const demoServices = {
+  tiktok: [
+    { id:1, name:'Tăng like (Tim) TikTok SV1 - Rẻ nhất', sell_price_per_1000:3000,  min_order:10,   max_order:100000, description:'Like từ tài khoản Việt Nam, tốc độ nhanh, giá rẻ nhất' },
+    { id:2, name:'Tăng like (Tim) TikTok SV2 - Chất lượng', sell_price_per_1000:5000, min_order:50,  max_order:50000,  description:'Like người thật, bảo hành 30 ngày, không tụt' },
+    { id:3, name:'Tăng follow TikTok SV1',  sell_price_per_1000:8000,  min_order:100,  max_order:100000, description:'Follow Việt Nam, giao chậm nhưng bền' },
+    { id:4, name:'Tăng follow TikTok SV2 - Nhanh', sell_price_per_1000:15000, min_order:50, max_order:10000, description:'Follow người thật, tốc độ nhanh' },
+    { id:5, name:'Tăng view TikTok',        sell_price_per_1000:500,   min_order:1000, max_order:10000000, description:'View TikTok, giao siêu nhanh' },
+    { id:6, name:'Tăng mắt livestream TikTok', sell_price_per_1000:20000, min_order:10, max_order:5000, description:'Mắt live ổn định trong suốt stream' },
+  ],
+  facebook: [
+    { id:7, name:'Tăng like bài viết FB SV1', sell_price_per_1000:4000, min_order:10, max_order:50000, description:'Like bài viết, tốc độ nhanh' },
+    { id:8, name:'Tăng follow cá nhân FB',  sell_price_per_1000:6000, min_order:50, max_order:10000, description:'Follow cá nhân Việt Nam' },
+    { id:9, name:'Tăng like Fanpage FB',    sell_price_per_1000:10000, min_order:100, max_order:100000, description:'Like fanpage người thật' },
+    { id:10,name:'Tăng view video FB',      sell_price_per_1000:800,  min_order:1000, max_order:5000000, description:'View video Facebook' },
+  ],
+  youtube: [
+    { id:11, name:'Tăng Sub YouTube SV1',   sell_price_per_1000:50000, min_order:10, max_order:10000,  description:'Sub Việt Nam, không drop' },
+    { id:12, name:'Tăng view YouTube',      sell_price_per_1000:3000,  min_order:500, max_order:1000000, description:'View an toàn, không vi phạm CS' },
+    { id:13, name:'Tăng giờ xem YouTube',   sell_price_per_1000:80000, min_order:100, max_order:5000,  description:'Giờ xem để đủ điều kiện monetize' },
+    { id:14, name:'Tăng like YouTube',      sell_price_per_1000:8000,  min_order:10, max_order:50000,  description:'Like video YouTube' },
+  ],
+  instagram: [
+    { id:15, name:'Tăng follow Instagram',  sell_price_per_1000:12000, min_order:50, max_order:50000, description:'Follow người thật' },
+    { id:16, name:'Tăng like ảnh Instagram',sell_price_per_1000:5000,  min_order:10, max_order:50000, description:'Like bài đăng ảnh/reels' },
+  ],
+  shopee: [
+    { id:17, name:'Tăng follow Shopee',     sell_price_per_1000:15000, min_order:10, max_order:10000, description:'Follow shop Shopee' },
+    { id:18, name:'Tăng mắt live Shopee',   sell_price_per_1000:25000, min_order:10, max_order:2000,  description:'Mắt livestream Shopee' },
+  ],
+};
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  loadServices('tiktok');
+  loadHistory();
+});
+
+// ===== PLATFORM SELECT =====
+function selectPlatform(el) {
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentPlatform = el.dataset.platform;
+  loadServices(currentPlatform);
+}
+
+function loadServices(platform) {
+  const select = document.getElementById('service-select');
+  select.innerHTML = '<option value="">-- Chọn dịch vụ --</option>';
+  currentService = null;
+
+  /* === THẬT ===
+  fetch(`/api/order.php?action=get_services&platform=${platform}`)
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) return;
+      renderServices(data.data);
+    });
+  */
+
+  // === DEMO ===
+  const services = demoServices[platform] || [];
+  services.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = s.name + ' — ' + fmt(s.sell_price_per_1000) + 'đ/1000';
+    opt.dataset.info = JSON.stringify(s);
+    select.appendChild(opt);
+  });
+  validateForm();
+}
+
+function onServiceChange() {
+  const sel = document.getElementById('service-select');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt.dataset.info) { currentService = null; validateForm(); return; }
+
+  currentService = JSON.parse(opt.dataset.info);
+
+  const desc = document.getElementById('svc-desc');
+  desc.textContent = '💡 ' + currentService.description;
+  desc.classList.add('show');
+
+  document.getElementById('min-max-hint').textContent =
+    `Tối thiểu: ${fmt(currentService.min_order)} — Tối đa: ${fmt(currentService.max_order)}`;
+
+  const qtyInput = document.getElementById('qty-input');
+  qtyInput.min = currentService.min_order;
+  qtyInput.max = currentService.max_order;
+  if (!qtyInput.value) qtyInput.value = currentService.min_order;
+
+  calcPrice();
+  validateForm();
+}
+
+// ===== QTY & PRICE =====
+function setQty(n) {
+  document.getElementById('qty-input').value = n;
+  calcPrice(); validateForm();
+}
+
+function calcPrice() {
+  if (!currentService) return;
+  const qty   = parseInt(document.getElementById('qty-input').value) || 0;
+  const price = Math.ceil(qty / 1000 * currentService.sell_price_per_1000);
+
+  document.getElementById('price-display').textContent = fmt(price) + 'đ';
+
+  const after = userBalance - price;
+  const el = document.getElementById('balance-after');
+  el.textContent = fmt(Math.max(0, after)) + 'đ';
+  el.style.color = after < 0 ? 'var(--red)' : 'var(--text)';
+
+  validateForm();
+}
+
+function validateForm() {
+  const link  = document.getElementById('link-input').value.trim();
+  const qty   = parseInt(document.getElementById('qty-input').value) || 0;
+  const price = currentService ? Math.ceil(qty / 1000 * currentService.sell_price_per_1000) : 0;
+  const btn   = document.getElementById('btn-order');
+
+  const valid = currentService
+    && link.length > 5
+    && qty >= (currentService?.min_order || 1)
+    && qty <= (currentService?.max_order || 9999999)
+    && price <= userBalance;
+
+  btn.disabled = !valid;
+}
+
+// ===== PLACE ORDER =====
+async function placeOrder() {
+  const btn  = document.getElementById('btn-order');
+  const link = document.getElementById('link-input').value.trim();
+  const qty  = parseInt(document.getElementById('qty-input').value);
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Đang đặt hàng...';
+
+  try {
+    /* === THẬT ===
+    const res  = await fetch('/api/order.php', {
+      method: 'POST',
+      body: new URLSearchParams({ action:'place_order', service_id: currentService.id, link, quantity: qty })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    userBalance = data.data.new_balance;
+    */
+
+    // === DEMO ===
+    await new Promise(r => setTimeout(r, 1200));
+    const price = Math.ceil(qty / 1000 * currentService.sell_price_per_1000);
+    userBalance -= price;
+    const demoResult = { order_id: Math.floor(Math.random()*90000)+10000, status: 'processing' };
+    // === END DEMO ===
+
+    // Cập nhật số dư hiển thị
+    document.getElementById('nav-balance').textContent = fmt(userBalance) + 'đ';
+    document.getElementById('balance-after').textContent = fmt(userBalance) + 'đ';
+
+    showToast('✅ Đặt hàng thành công! Đơn đang được xử lý.', 'success');
+
+    // Reset form
+    document.getElementById('link-input').value = '';
+    document.getElementById('qty-input').value  = '';
+    document.getElementById('price-display').textContent = '0đ';
+    currentService = null;
+    document.getElementById('service-select').value = '';
+    document.getElementById('svc-desc').classList.remove('show');
+
+    // Chuyển sang tab lịch sử sau 1.5 giây
+    setTimeout(() => { showSection('history'); loadHistory(); }, 1500);
+
+  } catch(e) {
+    showToast('❌ ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-rocket"></i> Đặt Hàng Ngay';
+    validateForm();
+  }
+}
+
+// ===== LOAD HISTORY =====
+async function loadHistory() {
+  const container = document.getElementById('orders-list');
+  container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Đang tải...</p></div>';
+
+  /* === THẬT ===
+  const statusFilter = document.getElementById('filter-status').value;
+  const searchFilter = document.getElementById('filter-search').value;
+  const res  = await fetch(`/api/order.php?action=history&status=${statusFilter}&q=${searchFilter}`);
+  const data = await res.json();
+  const orders = data.data?.orders || [];
+  */
+
+  // === DEMO DATA ===
+  await new Promise(r => setTimeout(r, 500));
+  const orders = [
+    { id:10001, service_name:'Tăng like (Tim) TikTok SV2 - Chất lượng', link:'https://www.tiktok.com/@vtdroblox/video/123456', quantity:1620, start_count:0, remains:0,    total_price:19926, status:'completed',  created_at:'2026-03-31 06:32' },
+    { id:10002, service_name:'Tăng like (Tim) TikTok SV6',               link:'https://www.tiktok.com/@vtdroblox/video/789012', quantity:10,   start_count:0, remains:0,    total_price:0,     status:'completed',  created_at:'2026-03-31 06:20' },
+    { id:10003, service_name:'Tăng follow TikTok SV1',                   link:'https://www.tiktok.com/@vtdroblox',              quantity:500,  start_count:0, remains:120,  total_price:4000,  status:'inprogress', created_at:'2026-03-31 06:50' },
+    { id:10004, service_name:'Tăng Sub YouTube SV1',                     link:'https://youtube.com/@vtdroblox',                 quantity:200,  start_count:0, remains:200,  total_price:10000, status:'pending',    created_at:'2026-03-31 07:00' },
+  ];
+  // === END DEMO ===
+
+  if (!orders.length) {
+    container.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><p>Chưa có đơn hàng nào</p></div>';
+    return;
+  }
+
+  container.innerHTML = orders.map(o => {
+    const done    = o.quantity - (o.remains || 0);
+    const pct     = o.quantity > 0 ? Math.round(done / o.quantity * 100) : 0;
+    const shortLink = o.link.length > 45 ? o.link.slice(0,45) + '...' : o.link;
+    const statusLabels = {
+      pending:'⏳ Đang chờ', processing:'🔄 Đang xử lý', inprogress:'🚀 Đang chạy',
+      completed:'✅ Hoàn thành', partial:'⚠️ Chạy thiếu', canceled:'❌ Đã hủy', error:'❌ Lỗi'
+    };
+    return `
+    <div class="order-item">
+      <div class="order-top">
+        <div>
+          <div class="order-service">${o.service_name}</div>
+          <div class="order-link">${shortLink}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Tổng thanh toán: <a style="color:var(--teal);font-weight:700">${fmt(o.total_price)}đ</a></div>
+        </div>
+        <span class="badge badge-${o.status}">${statusLabels[o.status] || o.status}</span>
+      </div>
+      <div class="order-bottom">
+        <div class="order-meta">Số lượng: <strong>${fmt(o.quantity)}</strong></div>
+        <div class="order-meta">Bắt đầu: <strong>${o.start_count}</strong></div>
+        <div class="order-meta">Đã chạy: <strong>${fmt(done)}</strong></div>
+        <div class="order-progress">
+          <div style="font-size:11px;color:var(--muted)">${pct}%</div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" style="width:${pct}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== SECTIONS =====
+function showSection(s) {
+  document.getElementById('section-order').style.display   = s === 'order'   ? '' : 'none';
+  document.getElementById('section-history').style.display = s === 'history' ? '' : 'none';
+  document.querySelectorAll('.stab').forEach((t,i) => t.classList.toggle('active', (i===0&&s==='order')||(i===1&&s==='history')));
+  if (s === 'history') loadHistory();
+}
+
+// ===== UTILS =====
+function fmt(n) { return Number(n).toLocaleString('vi-VN'); }
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+</script>
+</body>
+</html>
